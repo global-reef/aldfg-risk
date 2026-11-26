@@ -1,0 +1,7 @@
+dfg_id,site,dfg_type,depth_m,surface_area_m2,stability,degradation,risk_scale,ecological_value,coral_abundance,coral_recruits,genus_richness,growth_form_richness,combined_benthic_richness,fauna_abundance,fauna_notes,cover_cca,cover_hard_coral,cover_macroalgae,cover_sediment,cover_turf,cover_unknown,cover_sponge,cover_soft_coral,cover_zoanthids,cover_corallimorphs,cover_tunicates,total_biotic_cover,action
+Net 86,Tao Tong South,rope,8.6,0.36,Mobile,High,5,0,0,0,0,0,2,0,0,0,4,14.666666666666666,80,0,1.3333333333333333,0,0,0,0,0,18.666666666666664,Prioritise removal
+Net 45,South Nang Yuan,rope,10.6,0.9,Mobile,Moderate,4,4,5,5,5,3,9,1,1,0.5161290322580645,1.6774193548387097,30.838709677419356,66.45161290322581,0.12903225806451613,0.12903225806451613,0.25806451612903225,0,0,0,0,33.41935483870968,Monitor
+Net 13,Chalok,wire,8.7,1.2834,Semi-stable,High,3,5,2,2,2,1,6,12,12,0.3333333333333333,1.3333333333333333,38,49.666666666666664,5.666666666666667,4,1,0,0,0,0,46.33333333333333,Monitor
+Net 90,Tao Tong South,wire,9.4,2.656,Semi-stable,High,3,5,12,7,3,2,4,18,18,0,4.666666666666667,70.66666666666667,24.666666666666668,0,0,0,0,0,0,0,75.33333333333334,Monitor
+Net 21,Chalok,rope,10.8,1.16,Semi-stable,High,3,6,23,18,6,4,9,11,11,2.6666666666666665,7.733333333333333,40.266666666666666,48.53333333333333,0,0,0.8,0,0,0,0,51.46666666666667,Low removal priority
+Net 20,Chalok,wire,9.5,0.72,Stable,Moderate,1,5,29,20,5,3,8,3,3,0.4,7.2,53.2,38.8,0,0,0.4,0,0,0,0,61.2,Low removal priority

@@ -1,23 +1,23 @@
 ### 01. SAMPLING DESIGN ####
 
-gear %>% count(site, sort = TRUE) %>% print(n = Inf)
-gear %>% count(gear_group)
-gear %>% count(substrate_group)
+dfg %>% count(site, sort = TRUE) %>% print(n = Inf)
+dfg %>% count(dfg_group)
+dfg %>% count(substrate_group)
 
-table(gear$stability, gear$degradation)
-table(gear$site, gear$stability)
-table(gear$site, gear$degradation)
-table(gear$gear_group, gear$stability)
-table(gear$substrate_group, gear$stability)
+table(dfg$stability, dfg$degradation)
+table(dfg$site, dfg$stability)
+table(dfg$site, dfg$degradation)
+table(dfg$dfg_group, dfg$stability)
+table(dfg$substrate_group, dfg$stability)
 
-gear %>%
+dfg %>%
   group_by(stability) %>%
   summarise(n = n(), n_sites = n_distinct(site),
             median_area = median(surface_area_m2),
             min_area = min(surface_area_m2),
             max_area = max(surface_area_m2))
 
-gear %>%
+dfg %>%
   group_by(degradation) %>%
   summarise(n = n(), n_sites = n_distinct(site),
             median_area = median(surface_area_m2),
@@ -28,20 +28,17 @@ gear %>%
 ### 02. DERIVE ECOLOGICAL METRICS ####
 
 # Unknown classifications are excluded from biological group richness.
-biotic_cols <- c("cover_hard_coral", "cover_soft_coral", "cover_cca",
-                 "cover_sponge", "cover_tunicates", "cover_zoanthids",
-                 "cover_corallimorphs", "cover_macroalgae", "cover_turf")
 
-gear <- gear %>%
+dfg <- dfg %>%
   mutate(
     total_biotic_cover = rowSums(pick(all_of(biotic_cols))),
-    functional_richness = rowSums(pick(all_of(biotic_cols)) > 0),
+    benthic_richness = rowSums(pick(all_of(biotic_cols)) > 0),
     recruit_density = coral_recruits / surface_area_m2,
     fauna_density = fauna_abundance / surface_area_m2
   )
 
 count_vars <- c("coral_recruits", "genus_richness", "growth_form_richness",
-                "fauna_abundance", "functional_richness")
+                "fauna_abundance", "benthic_richness")
 
 continuous_vars <- c("surface_area_m2", "depth_m", "mesh_diameter",
                      "cover_sediment", "n_images", "total_biotic_cover")
@@ -49,7 +46,7 @@ continuous_vars <- c("surface_area_m2", "depth_m", "mesh_diameter",
 
 ### 03. VARIABLE DISTRIBUTIONS ####
 
-gear %>%
+dfg %>%
   select(all_of(c(count_vars, continuous_vars))) %>%
   pivot_longer(everything(), names_to = "variable") %>%
   group_by(variable) %>%
@@ -67,7 +64,7 @@ gear %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   print(n = Inf, width = Inf)
 
-p_distributions <- gear %>%
+p_distributions <- dfg %>%
   select(all_of(c(count_vars, continuous_vars))) %>%
   pivot_longer(everything(), names_to = "variable") %>%
   ggplot(aes(value)) +
@@ -81,46 +78,46 @@ p_distributions
 ### 04. GEAR CHARACTERISTICS AND SAMPLING EFFORT ####
 
 p_area <- (
-  ggplot(gear, aes(stability, surface_area_m2, fill = stability)) +
+  ggplot(dfg, aes(stability, surface_area_m2, fill = stability)) +
     geom_boxplot(outlier.shape = NA) +
     geom_jitter(width = 0.15, size = 1.5) +
     scale_y_log10() +
     scale_fill_manual(values = stability_cols) +
-    labs(x = "Structural stability", y = expression("Gear area (m"^2*")"))
+    labs(x = "Structural stability", y = expression("ALDFG area (m"^2*")"))
 ) + (
-  ggplot(gear, aes(degradation, surface_area_m2, fill = degradation)) +
+  ggplot(dfg, aes(degradation, surface_area_m2, fill = degradation)) +
     geom_boxplot(outlier.shape = NA) +
     geom_jitter(width = 0.15, size = 1.5) +
     scale_y_log10() +
     scale_fill_manual(values = degradation_cols) +
-    labs(x = "Degree of degradation", y = expression("Gear area (m"^2*")"))
+    labs(x = "Degree of degradation", y = expression("ALDFG area (m"^2*")"))
 ) & theme(legend.position = "none")
 
 p_area
 
 p_effort <- (
-  ggplot(gear, aes(surface_area_m2, n_images)) +
+  ggplot(dfg, aes(surface_area_m2, n_images)) +
     geom_point() +
     scale_x_log10() +
-    labs(x = expression("Gear area (m"^2*")"), y = "Number of images")
+    labs(x = expression("ALDFG area (m"^2*")"), y = "Number of images")
 ) + (
-  ggplot(gear, aes(n_images, functional_richness)) +
+  ggplot(dfg, aes(n_images, benthic_richness)) +
     geom_jitter(width = 0.15, height = 0.1) +
-    labs(x = "Number of images", y = "Functional richness")
+    labs(x = "Number of images", y = "Benthic richness")
 )
 
 p_effort
 
-gear %>%
+dfg %>%
   select(surface_area_m2, depth_m, mesh_diameter,
-         cover_sediment, n_images, functional_richness) %>%
+         cover_sediment, n_images, benthic_richness) %>%
   cor(method = "spearman", use = "pairwise.complete.obs") %>%
   round(2)
 
 
 ### 05. ECOLOGICAL RESPONSES ####
 
-p_stability <- gear %>%
+p_stability <- dfg %>%
   select(stability, all_of(count_vars)) %>%
   pivot_longer(-stability, names_to = "response") %>%
   ggplot(aes(stability, value, fill = stability)) +
@@ -133,7 +130,7 @@ p_stability <- gear %>%
 
 p_stability
 
-p_degradation <- gear %>%
+p_degradation <- dfg %>%
   select(degradation, all_of(count_vars)) %>%
   pivot_longer(-degradation, names_to = "response") %>%
   ggplot(aes(degradation, value, fill = degradation)) +
@@ -146,7 +143,7 @@ p_degradation <- gear %>%
 
 p_degradation
 
-p_sediment <- gear %>%
+p_sediment <- dfg %>%
   select(cover_sediment, all_of(count_vars)) %>%
   pivot_longer(-cover_sediment, names_to = "response") %>%
   ggplot(aes(cover_sediment, value)) +
@@ -156,7 +153,7 @@ p_sediment <- gear %>%
 
 p_sediment
 
-p_counts_area <- gear %>%
+p_counts_area <- dfg %>%
   select(surface_area_m2, stability, all_of(count_vars)) %>%
   pivot_longer(all_of(count_vars), names_to = "response") %>%
   ggplot(aes(surface_area_m2, value, colour = stability)) +
@@ -164,11 +161,11 @@ p_counts_area <- gear %>%
   scale_x_log10() +
   scale_colour_manual(values = stability_cols) +
   facet_wrap(~response, scales = "free_y") +
-  labs(x = expression("Gear area (m"^2*")"), y = NULL, colour = "Stability")
+  labs(x = expression("ALDFG area (m"^2*")"), y = NULL, colour = "Stability")
 
 p_counts_area
 
-gear %>%
+dfg %>%
   select(surface_area_m2, n_images, cover_sediment, all_of(count_vars)) %>%
   cor(method = "spearman", use = "pairwise.complete.obs") %>%
   round(2)
@@ -176,7 +173,7 @@ gear %>%
 
 ### 06. BENTHIC COMMUNITY COMPOSITION ####
 
-gear %>%
+dfg %>%
   select(all_of(biotic_cols), cover_sediment, cover_unknown) %>%
   pivot_longer(everything(), names_to = "category", values_to = "cover") %>%
   group_by(category) %>%
@@ -191,11 +188,11 @@ gear %>%
   mutate(across(where(is.numeric), ~round(., 2)))
 
 # All-zero biological communities require consideration before Bray-Curtis analysis.
-gear %>%
+dfg %>%
   filter(total_biotic_cover == 0) %>%
-  select(gear_id, stability, degradation, n_points, cover_sediment, cover_unknown)
+  select(dfg_id, stability, degradation, n_points, cover_sediment, cover_unknown)
 
-p_composition <- gear %>%
+p_composition <- dfg %>%
   select(stability, degradation, all_of(biotic_cols), cover_sediment, cover_unknown) %>%
   pivot_longer(starts_with("cover_"), names_to = "category", values_to = "cover") %>%
   group_by(stability, degradation, category) %>%
@@ -207,8 +204,8 @@ p_composition <- gear %>%
 
 p_composition
 
-p_biotic <- ggplot(gear, aes(cover_sediment, total_biotic_cover,
-                             colour = stability)) +
+p_biotic <- ggplot(dfg, aes(cover_sediment, total_biotic_cover,
+                            colour = stability)) +
   geom_point() +
   geom_abline(intercept = 100, slope = -1, linetype = "dashed") +
   scale_colour_manual(values = stability_cols) +

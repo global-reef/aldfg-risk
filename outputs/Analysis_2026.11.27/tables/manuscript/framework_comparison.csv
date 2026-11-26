@@ -1,0 +1,10 @@
+action_current,action,n
+Prioritise removal,Prioritise removal,60
+Prioritise removal,Monitor,11
+Prioritise removal,Low removal priority,0
+Monitor,Prioritise removal,6
+Monitor,Monitor,18
+Monitor,Low removal priority,0
+Low removal priority,Prioritise removal,0
+Low removal priority,Monitor,0
+Low removal priority,Low removal priority,11

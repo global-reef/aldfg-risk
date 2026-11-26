@@ -25,6 +25,26 @@ dfg %>% count(stability, degradation)
 dfg %>% count(substrate_group)
 
 
+#### B. Benthic category occurrence and cover ####
+
+# Occurrence is detection in photoquadrats; positive cover summaries exclude zeros.
+cover_long <- dfg %>%
+  select(dfg_id, all_of(biotic_cols)) %>%
+  pivot_longer(all_of(biotic_cols), names_to = "category", values_to = "cover") %>%
+  mutate(category = recode(category, !!!cover_labels))
+
+cover_summary <- cover_long %>%
+  group_by(category) %>%
+  summarise(n_total = n(), n_present = sum(cover > 0),
+            occurrence = 100 * n_present / n_total,
+            mean_cover = mean(cover), median_present = median(cover[cover > 0]),
+            q25_present = quantile(cover[cover > 0], 0.25),
+            q75_present = quantile(cover[cover > 0], 0.75),
+            max_cover = max(cover), .groups = "drop") %>%
+  arrange(desc(n_present))
+
+print(cover_summary, n = Inf, width = Inf)
+
 ### 02. PRIMARY MODEL RESULTS ####
 
 #### A. Overall predictor tests ####
@@ -146,6 +166,7 @@ framework %>%
   summarise(
     mean_risk = mean(risk_scale),
     mean_value = mean(ecological_value),
+    min_value = min(ecological_value), max_value = max(ecological_value),
     sd_value = sd(ecological_value),
     percent_zero = 100 * mean(ecological_value == 0)
   )
@@ -163,9 +184,9 @@ risk_se <- sqrt(diag(risk_design %*% m3_vcov %*% t(risk_design)))
 
 risk_predictions <- risk_predictions %>%
   mutate(
-    predicted = 6 * plogis(risk_link),
-    lower_CL = 6 * plogis(risk_link - qnorm(0.975) * risk_se),
-    upper_CL = 6 * plogis(risk_link + qnorm(0.975) * risk_se)
+    predicted = 8 * plogis(risk_link),
+    lower_CL = 8 * plogis(risk_link - qnorm(0.975) * risk_se),
+    upper_CL = 8 * plogis(risk_link + qnorm(0.975) * risk_se)
   )
 
 rm(risk_design, risk_link, risk_se)
@@ -193,7 +214,7 @@ framework_examples <- framework %>%
     dfg_id, site, dfg_type, depth_m, surface_area_m2,
     stability, degradation, risk_scale, ecological_value,
     coral_abundance, coral_recruits, genus_richness,
-    growth_form_richness, fauna_abundance, fauna_notes,
+    growth_form_richness, combined_benthic_richness, fauna_abundance, fauna_notes,
     starts_with("cover_"), total_biotic_cover, action
   ) %>%
   arrange(action, desc(risk_scale))
@@ -222,18 +243,25 @@ m1b_unrestricted
 m1b_restricted
 
 
-#### B. Stability bonus ####
+#### B. Earlier coral-only framework and stability bonus ####
+
+risk_ecology_current
+lmtest::coeftest(m3_current, vcov. = m3_current_vcov)
+
+framework_comparison <- framework %>%
+  count(action_current, action, .drop = FALSE)
+framework_comparison
 
 risk_ecology_bonus
 lmtest::coeftest(m3_bonus, vcov. = m3_bonus_vcov)
 
-lmtest::coeftest(m3, vcov. = sandwich::vcovCL(
-  m3, cluster = framework$site, type = "HC3"
-))
+lmtest::coeftest(m3, vcov. = m3_site_vcov)
 
 
 ### 06. SAVE MANUSCRIPT RESULTS ####
 
+write_csv(cover_summary, file.path(results_dir, "benthic_occurrence_cover.csv"))
+write_csv(framework_comparison, file.path(results_dir, "framework_comparison.csv"))
 write_csv(sample_summary, file.path(results_dir, "sample_summary.csv"))
 write_csv(primary_tests, file.path(results_dir, "primary_tests.csv"))
 write_csv(key_effect_sizes, file.path(results_dir, "key_effect_sizes.csv"))
@@ -242,13 +270,15 @@ write_csv(sensitivity_summary, file.path(results_dir, "sensitivity_summary.csv")
 write_csv(action_summary, file.path(results_dir, "framework_summary.csv"))
 write_csv(framework_examples, file.path(results_dir, "framework_examples.csv"))
 
-# Supplementary gear-level management table.
+# Supplementary ALDFG-level management table.
 framework %>%
   select(
     dfg_id, site, dfg_type, depth_m, surface_area_m2,
     stability, degradation, risk_scale, coral_abundance,
     coral_recruits, genus_richness, growth_form_richness,
-    fauna_abundance, score_recruits, score_genus, score_growth,ecological_value, action
+    fauna_abundance, cover_hard_coral, combined_benthic_richness,
+    score_recruits, score_hc_cover, score_combined_richness, score_fauna,
+    ecological_value, action, ecological_value_current, action_current
   ) %>%
   arrange(action, desc(risk_scale), ecological_value) %>%
   write_csv(file.path(results_dir, "framework_gear.csv"))
@@ -268,3 +298,17 @@ saveRDS(
 rm(extract_tests, extract_effects)
 
 beep()
+
+# other small results 
+# range of "other substrates" 
+dfg %>%
+  group_by(stability) %>%
+  summarise(mean = mean(total_biotic_cover),
+            min = min(total_biotic_cover),
+            max = max(total_biotic_cover))
+
+dfg %>%
+  group_by(degradation) %>%
+  summarise(mean = mean(total_biotic_cover),
+            min = min(total_biotic_cover),
+            max = max(total_biotic_cover))

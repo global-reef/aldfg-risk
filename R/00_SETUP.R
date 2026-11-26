@@ -1,25 +1,25 @@
 ### 01. PACKAGES ####
 suppressPackageStartupMessages({
-library(janitor)
-library(lubridate)
-library(readxl)
-library(glmmTMB)
-library(DHARMa)
-library(performance)
-library(emmeans)
-library(vegan)
-library(patchwork)
-library(tidyverse)
-library(mvabund)
-library(dplyr)
-library(beepr)
+  library(janitor)
+  library(lubridate)
+  library(readxl)
+  library(glmmTMB)
+  library(DHARMa)
+  library(performance)
+  library(emmeans)
+  library(vegan)
+  library(patchwork)
+  library(tidyverse)
+  library(mvabund)
+  library(beepr)
+  library(dplyr)
 })
 set.seed(42)
 
 
 ### 02. DIRECTORIES ####
 
-analysis_date <- format(Sys.Date(), "%Y.%m.%d")
+analysis_date <- "2026.11.27"
 
 data_raw_dir <- "data/raw"
 data_clean_dir <- "data/clean"
@@ -100,6 +100,25 @@ action_cols <- c(
 )
 
 heatmap_cols <- c("#F5F3EE", "#B9C7B5", "#477F91", "#1F4E6B")
+
+#### Benthic cover variables and labels ####
+
+biotic_cols <- c("cover_hard_coral", "cover_soft_coral", "cover_cca",
+                 "cover_sponge", "cover_tunicates", "cover_zoanthids",
+                 "cover_corallimorphs", "cover_macroalgae", "cover_turf")
+
+cover_labels <- c(
+  cover_hard_coral = "Hard coral",
+  cover_soft_coral = "Soft coral",
+  cover_cca = "CCA",
+  cover_sponge = "Sponge",
+  cover_tunicates = "Tunicates",
+  cover_zoanthids = "Zoanthids",
+  cover_corallimorphs = "Corallimorphs",
+  cover_macroalgae = "Macroalgae",
+  cover_turf = "Turf algae"
+)
+
 
 ### 04. SESSION INFO AND CITATIONS ####
 

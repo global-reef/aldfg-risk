@@ -1,8 +1,5 @@
 ### 01. MODEL DATA PREPARATION ####
 
-biotic_cols <- c("cover_hard_coral", "cover_soft_coral", "cover_cca",
-                 "cover_sponge", "cover_tunicates", "cover_zoanthids",
-                 "cover_corallimorphs", "cover_macroalgae", "cover_turf")
 
 dfg <- dfg %>%
   mutate(
