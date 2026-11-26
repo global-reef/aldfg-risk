@@ -1,4 +1,34 @@
 ### 01. FIGURE SETUP ####
+#### Publication dimensions ####
+
+figure_width <- 7.2
+half_page_height <- 4.5
+full_page_height <- 8
+figure_dpi <- 600
+
+#### Figure export helper ####
+save_figure <- function(plot,
+                        filename,
+                        size = c("half", "full"),
+                        width = figure_width,
+                        dir = plots_dir,
+                        dpi = figure_dpi,
+                        bg = "white") {
+  
+  size <- match.arg(size)
+  height <- if (size == "half") half_page_height else full_page_height
+  
+  png_path <- file.path(dir, paste0(filename, ".png"))
+  pdf_path <- file.path(dir, paste0(filename, ".pdf"))
+  
+  ggsave(filename = png_path,plot = plot,
+         width = width,height = height,
+         units = "in", dpi = dpi, bg = bg)
+  ggsave(filename = pdf_path, plot = plot, width = width,
+         height = height, units = "in", bg = bg, device = "pdf")
+}
+
+
 
 # Match plotting labels to the cleaned ReefCloud cover variables.
 cover_labels <- c(
@@ -50,14 +80,16 @@ p2a <- ggplot(nmds_data, aes(NMDS1, NMDS2, colour = stability)) +
   stat_ellipse(aes(fill = stability), geom = "polygon",
                level = 0.95, alpha = 0.12, colour = NA) +
   stat_ellipse(level = 0.95, linewidth = 0.5) +
-  geom_point(size = 2, alpha = 0.8) +
+  geom_point(aes(shape = stability), size = 1.5, alpha = 0.95) +
   scale_colour_manual(values = stability_cols) +
   scale_fill_manual(values = stability_cols) +
+  scale_shape_manual(values = stability_shapes) +
   annotate("text", x = Inf, y = Inf,
            label = paste0("Stress = ", round(nmds1b$stress, 3)),
            hjust = 1.1, vjust = 1.5, size = 3) +
   coord_equal() +
-  labs(x = "NMDS1", y = "NMDS2", colour = NULL, fill = NULL)
+  labs(x = "NMDS1", y = "NMDS2",
+       colour = NULL, fill = NULL, shape = NULL)
 
 
 #### B. Total biotic cover ####
@@ -70,7 +102,7 @@ cover_emm <- emmeans(m1a, ~ stability, type = "response") %>%
 p2b <- ggplot(dfg, aes(stability)) +
   geom_jitter(aes(y = total_biotic_cover * n_points / n_identified,
                   colour = stability),
-              width = 0.14, height = 0, alpha = 0.4, size = 1.7) +
+              width = 0.14, height = 0, alpha = 0.6, size = 1.4) +
   geom_pointrange(
     data = cover_emm,
     aes(y = prob * 100, ymin = asymp.LCL * 100, ymax = asymp.UCL * 100),
@@ -191,43 +223,43 @@ fig3 <- (p3a | (p3b / p3c)) +
 print(fig3)
 
 
-### 05. FIGURE 4: REMOVAL PRIORITISATION FRAMEWORK ####
+### 05a. FIGURE 4: REMOVAL PRIORITISATION FRAMEWORK ####
 
 #### A. Decision matrix ####
 
 matrix_plot_data <- decision_matrix %>%
   mutate(
-    action_label = case_when(
-      action == "Remove" ~ "R",
-      action == "Consider Removal" ~ "C",
-      action == "Retain" ~ "T"
+    risk_group = case_when(
+      risk_scale == 1 ~ "Low (1)",
+      risk_scale <= 3 ~ "Medium (2–3)",
+      TRUE ~ "High (4–5)"
     ),
-    possible = !(risk_scale == 1 & ecological_value == 0 |
-                   risk_scale > 1 & ecological_value == 7),
-    cell_label = if_else(possible, paste0(action_label, "\n", n), "\u2013")
+    value_group = case_when(
+      ecological_value <= 2 ~ "Low (0–2)",
+      ecological_value <= 5 ~ "Medium (3–5)",
+      TRUE ~ "High (6)"
+    ),
+    risk_group = factor(risk_group, levels = c("Low (1)", "Medium (2–3)", "High (4–5)")),
+    value_group = factor(value_group, levels = c("Low (0–2)", "Medium (3–5)", "High (6)"))
+  ) %>%
+  distinct(risk_group, value_group, action)
+
+p4a <- ggplot(matrix_plot_data, aes(risk_group, value_group)) +
+  geom_tile(aes(fill = action), colour = "white", linewidth = 0.8) +
+  scale_fill_manual(values = action_cols) +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  labs(x = "Entanglement risk", y = "Ecological value", fill = NULL) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme(
+    axis.line = element_blank(),
+    axis.ticks = element_blank(),
+    legend.position = "right",
+    legend.direction = "vertical",
+    legend.justification = "center"
   )
 
-plot_decision_matrix <- function(palette) {
-  ggplot(matrix_plot_data, aes(risk_scale, ecological_value)) +
-    geom_tile(aes(fill = action), colour = "white", linewidth = 0.8) +
-    geom_text(aes(label = cell_label, colour = action),
-              size = 3.2, lineheight = 0.9) +
-    scale_fill_manual(values = palette, drop = FALSE) +
-    scale_colour_manual(
-      values = c("Remove" = "grey15", "Consider Removal" = "grey15",
-                 "Retain" = "white"), guide = "none"
-    ) +
-    scale_x_continuous(breaks = 1:5, expand = c(0, 0)) +
-    scale_y_continuous(breaks = 0:7, expand = c(0, 0)) +
-    coord_fixed() +
-    labs(x = "Entanglement risk score", y = "Ecological value score",
-         fill = NULL) +
-    theme(axis.line = element_blank(), axis.ticks = element_blank(),
-          legend.position = "bottom")
-}
-
-
-#### B. Risk–value trade-off ####
+#### B. Risk-value trade-off ####
 
 p4b <- ggplot(framework, aes(risk_scale, ecological_value)) +
   geom_ribbon(
@@ -240,51 +272,169 @@ p4b <- ggplot(framework, aes(risk_scale, ecological_value)) +
   geom_line(data = risk_predictions, aes(y = predicted),
             colour = "#1F4E6B", linewidth = 0.9) +
   scale_x_continuous(breaks = 1:5) +
-  scale_y_continuous(breaks = 0:7) +
-  coord_cartesian(ylim = c(-0.2, 7.2)) +
+  scale_y_continuous(breaks = 0:6) +
+  coord_cartesian(ylim = c(-0.2, 6.2)) +
   labs(x = "Entanglement risk score", y = "Ecological value score")
 
 
-#### C. Management outcomes ####
+#### C. Management priorities ####
 
-plot_management_counts <- function(palette) {
-  action_summary %>%
-    mutate(action = factor(action, levels = rev(action_levels))) %>%
-    ggplot(aes(n, action, fill = action)) +
-    geom_col(width = 0.65) +
-    geom_text(aes(label = sprintf("%d (%.1f%%)", n, percent)),
-              hjust = -0.12, size = 3) +
-    scale_fill_manual(values = palette, guide = "none") +
-    scale_x_continuous(expand = expansion(mult = c(0, 0.35))) +
-    labs(x = "Number of gear items", y = NULL) +
-    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank())
-}
+p4c <- action_summary %>%
+  mutate(action = factor(action, levels = rev(action_levels))) %>%
+  ggplot(aes(n, action, fill = action)) +
+  geom_col(width = 0.65) +
+  geom_text(aes(label = sprintf("%d (%.1f%%)", n, percent)),
+            hjust = -0.12, size = 3) +
+  scale_fill_manual(values = action_cols, guide = "none") +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.55))) +
+  labs(x = "Number of gear items", y = NULL) +
+  theme(axis.line.y = element_blank(), axis.ticks.y = element_blank())
 
 
-#### D. Assemble Figure 4: traffic-light palette ####
+#### D. Assemble Figure 4 ####
 
-fig4_traffic <- (
-  plot_decision_matrix(action_cols_traffic) |
-    (p4b / plot_management_counts(action_cols_traffic))
+fig4 <- (
+  p4b | ((p4a + theme(legend.position = "none")) / p4c)
 ) +
-  plot_layout(widths = c(1.2, 1)) +
+  plot_layout(widths = c(1, 1.2)) +
   plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
   theme_composite
 
-print(fig4_traffic)
+print(fig4)
 
 
-#### E. Assemble Figure 4: accessible marine palette ####
+save_figure(fig4, "Fig4_removal_framework", "half", dir = figures_dir)
 
-fig4_accessible <- (
-  plot_decision_matrix(action_cols_accessible) |
-    (p4b / plot_management_counts(action_cols_accessible))
+
+### 05b. ALTERNATIVE FIGURE 4: CONCEPTUAL FRAMEWORK ####
+
+#### A. Shared matrix theme ####
+
+theme_matrix <- theme_figure +
+  theme(
+    axis.line = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_text(colour = "grey20"),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none",
+    plot.title = element_blank(),
+    plot.subtitle = element_blank()
+  )
+
+
+#### B. Entanglement risk assessment ####
+
+risk_matrix <- expand_grid(
+  stability = factor(c("Mobile", "Semi-stable", "Stable"),
+                     levels = c("Mobile", "Semi-stable", "Stable")),
+  degradation = factor(c("Low", "Moderate", "High", "Severe"),
+                       levels = c("Low", "Moderate", "High", "Severe"))
+) %>%
+  mutate(
+    risk_scale = case_when(
+      stability == "Stable" ~ 1L,
+      stability == "Semi-stable" & degradation %in% c("Low", "Moderate") ~ 2L,
+      stability == "Semi-stable" & degradation %in% c("High", "Severe") ~ 3L,
+      stability == "Mobile" & degradation %in% c("Low", "Moderate") ~ 4L,
+      stability == "Mobile" & degradation %in% c("High", "Severe") ~ 5L
+    )
+  )
+
+p4a_alt <- ggplot(risk_matrix, aes(degradation, stability)) +
+  geom_tile(aes(fill = risk_scale), colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = risk_scale, colour = risk_scale >= 4), size = 4.5) +
+  scale_fill_gradientn(colours = heatmap_cols, limits = c(1, 5)) +
+  scale_colour_manual(values = c("FALSE" = "grey20", "TRUE" = "white")) +
+  scale_x_discrete(position = "top", expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  labs(x = "Degradation", y = "Physical stability") +
+  theme_matrix
+
+
+#### C. Ecological value assessment ####
+
+ecological_matrix <- tribble(
+  ~metric,                ~`0`,  ~`1`,  ~`2`,
+  "Recruit abundance",    "0",   "1–5", "≥6",
+  "Genus richness",       "0–1", "2",   "≥3",
+  "Growth form richness", "0–1", "2–3", "≥4"
+) %>%
+  pivot_longer(-metric, names_to = "score", values_to = "threshold") %>%
+  mutate(
+    score = as.integer(score),
+    metric = factor(metric, levels = rev(c(
+      "Recruit abundance", "Genus richness", "Growth form richness"
+    )))
+  )
+
+p4b_alt <- ggplot(ecological_matrix, aes(factor(score), metric)) +
+  geom_tile(aes(fill = score), colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = threshold, colour = score == 2), size = 4.5) +
+  scale_fill_gradientn(colours = c("#F5F3EE", "#B9C7B5", "#477F91"),
+                       limits = c(0, 2)) +
+  scale_colour_manual(values = c("FALSE" = "grey20", "TRUE" = "white")) +
+  scale_x_discrete(position = "top", expand = c(0, 0),
+                   labels = c("0 points", "1 point", "2 points")) +
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 12),
+                   expand = c(0, 0)) +
+  labs(x = "Component score", y = "Ecological metric") +
+  theme_matrix
+
+
+#### D. Removal prioritisation matrix ####
+
+matrix_plot_data <- decision_matrix %>%
+  mutate(
+    risk_group = case_when(
+      risk_scale == 1 ~ "Low (1)",
+      risk_scale <= 3 ~ "Medium (2–3)",
+      TRUE ~ "High (4–5)"
+    ),
+    value_group = case_when(
+      ecological_value <= 2 ~ "Low (0–2)",
+      ecological_value <= 5 ~ "Medium (3–5)",
+      TRUE ~ "High (6)"
+    ),
+    risk_group = factor(risk_group, levels = c("Low (1)", "Medium (2–3)", "High (4–5)")),
+    value_group = factor(value_group, levels = c("High (6)", "Medium (3–5)", "Low (0–2)"))
+  ) %>%
+  distinct(risk_group, value_group, action)
+
+stopifnot(nrow(matrix_plot_data) == 9)
+
+p4c_alt <- ggplot(matrix_plot_data, aes(risk_group, value_group)) +
+  geom_tile(aes(fill = action), colour = "white", linewidth = 0.8) +
+  geom_text(
+    aes(
+      label = recode(as.character(action),
+                     "Prioritise removal" = "Priority",
+                     "Monitor" = "Monitor",
+                     "Low removal priority" = "Low"),
+      colour = action == "Low removal priority"
+    ),
+    size = 4.5
+  ) +
+  scale_fill_manual(values = action_cols) +
+  scale_colour_manual(values = c("FALSE" = "grey20", "TRUE" = "white")) +
+  scale_x_discrete(position = "top", expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  labs(x = "Entanglement risk", y = "Ecological value") +
+  theme_matrix
+
+
+#### E. Assemble conceptual framework ####
+
+fig4_alt <- wrap_plots(
+  A = p4a_alt,
+  B = p4b_alt,
+  C = p4c_alt,
+  design = "AB
+            CC",
+  heights = c(1, 1)
 ) +
-  plot_layout(widths = c(1.2, 1)) +
-  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
-  theme_composite
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")")
 
-print(fig4_accessible)
+print(fig4_alt)
 
 
 ### 06. FIGURE 5: ILLUSTRATIVE MANAGEMENT CASES ####
@@ -341,43 +491,60 @@ print(fig5)
 
 ### 07. FIGURE S1: INDIVIDUAL BENTHIC COMPOSITION ####
 
-# Retain absolute observed percentage cover to show both colonisation
-# extent and biological composition. Sediment and unknown cover are
-# represented by the unfilled portion of each bar.
+#### A. Prepare composition data ####
+
+# Retain absolute percentage cover to represent both colonisation
+# extent and biological composition.
 
 composition_plot_data <- dfg %>%
   arrange(stability, total_biotic_cover) %>%
-  mutate(
-    dfg_id = factor(dfg_id, levels = unique(dfg_id)),
-    gear_number = str_remove(as.character(dfg_id), "^Net ")
-  ) %>%
-  select(dfg_id, gear_number, stability, all_of(biotic_cols)) %>%
-  pivot_longer(all_of(biotic_cols), names_to = "category",
-               values_to = "cover") %>%
+  mutate(dfg_id = factor(dfg_id, levels = unique(dfg_id))) %>%
+  select(dfg_id, stability, all_of(biotic_cols)) %>%
+  pivot_longer(all_of(biotic_cols), names_to = "category", values_to = "cover") %>%
   mutate(
     category = recode(category, !!!cover_labels),
     category = factor(category, levels = names(benthic_cols))
   )
 
-figS1 <- ggplot(composition_plot_data, aes(dfg_id, cover, fill = category)) +
-  geom_col(width = 0.9, colour = NA) +
-  facet_grid(. ~ stability, scales = "free_x", space = "free_x") +
-  scale_fill_manual(values = benthic_cols) +
-  scale_x_discrete(labels = function(x) str_remove(x, "^Net "),
-                   expand = expansion(add = 0.5)) +
-  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 25),
-                     labels = scales::label_number(suffix = "%"),
-                     expand = expansion(mult = c(0, 0.02))) +
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
-  labs(x = "Fishing gear ID", y = "Biological cover", fill = NULL) +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5,
-                               hjust = 1, size = 6),
-    axis.ticks.x = element_blank(),
-    panel.spacing.x = unit(0.8, "lines"),
-    panel.grid.major.y = element_line(colour = "grey90", linewidth = 0.3),
-    strip.text = element_text(face = "bold")
-  )
+
+#### B. Plot stability groups ####
+
+plot_composition <- function(groups) {
+  composition_plot_data %>%
+    filter(stability %in% groups) %>%
+    ggplot(aes(dfg_id, cover, fill = category)) +
+    geom_col(width = 0.9) +
+    facet_grid(. ~ stability, scales = "free_x", space = "free_x") +
+    scale_fill_manual(values = benthic_cols, drop = FALSE,
+                      breaks = names(benthic_cols)[1:9]) +
+    scale_x_discrete(labels = function(x) str_remove(x, "^Net "),
+                     expand = expansion(add = 0.5)) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 25),
+      labels = scales::label_number(suffix = "%"),
+      expand = expansion(mult = c(0, 0.02))
+    ) +
+    coord_cartesian(ylim = c(0, 100)) +
+    guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+    labs(x = "Fishing gear ID", y = "Biological cover", fill = NULL) +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7),
+      axis.ticks.x = element_blank(),
+      panel.spacing.x = unit(1, "lines"),
+      panel.grid.major.y = element_line(colour = "grey90", linewidth = 0.3),
+      strip.text = element_text(face = "bold")
+    )
+}
+
+
+#### C. Assemble Figure S1 ####
+
+figS1 <- (
+  (plot_composition(c("Mobile", "Stable")) + labs(x = NULL)) /
+    plot_composition("Semi-stable")
+) +
+  plot_layout(guides = "collect", heights = c(1, 1)) &
+  theme(legend.position = "bottom")
 
 print(figS1)
 
@@ -453,30 +620,17 @@ figS2 <- ggplot(heatmap_data, aes(condition, category, fill = mean_cover)) +
 print(figS2)
 
 
+
 ### 09. SAVE ALL FIGURES ####
 
 figures_dir <- file.path(plots_dir, "manuscript")
 dir.create(figures_dir, recursive = TRUE, showWarnings = FALSE)
 
-ggsave(file.path(figures_dir, "Fig2_benthic_integration.pdf"),
-       fig2, width = 8, height = 5.5, bg = "white")
-
-ggsave(file.path(figures_dir, "Fig3_ecological_value.pdf"),
-       fig3, width = 8, height = 5.5, bg = "white")
-
-ggsave(file.path(figures_dir, "Fig4_framework_traffic.pdf"),
-       fig4_traffic, width = 8, height = 5.5, bg = "white")
-
-ggsave(file.path(figures_dir, "Fig4_framework_accessible.pdf"),
-       fig4_accessible, width = 8, height = 5.5, bg = "white")
-
-ggsave(file.path(figures_dir, "Fig5_management_cases_draft.pdf"),
-       fig5, width = 9, height = 7, bg = "white")
-
-ggsave(file.path(figures_dir, "FigS1_benthic_composition.pdf"),
-       figS1, width = 14, height = 5, bg = "white")
-
-ggsave(file.path(figures_dir, "FigS2_benthic_heatmap.pdf"),
-       figS2, width = 8.5, height = 5.5, bg = "white")
+save_figure(fig2, "Fig2_benthic_integration", "half", dir = figures_dir)
+save_figure(fig3, "Fig3_ecological_value", "half", dir = figures_dir)
+save_figure(fig4_alt, "Fig4_removal_framework", "half", dir = figures_dir)
+# save_figure(fig5, "Fig5_management_cases_draft", "full", dir = figures_dir)
+save_figure(figS1, "FigS1_benthic_composition", "full", dir = figures_dir)
+save_figure(figS2, "FigS2_benthic_heatmap", "half", dir = figures_dir)
 
 beep()

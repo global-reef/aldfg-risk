@@ -1,0 +1,107 @@
+dfg_id,site,dfg_type,depth_m,surface_area_m2,stability,degradation,risk_scale,coral_abundance,coral_recruits,genus_richness,growth_form_richness,fauna_abundance,score_recruits,score_genus,score_growth,ecological_value,action
+Net 22,Tanote,wire,6.3,0.08,Mobile,High,5,1,0,1,1,0,0,0,0,0,Prioritise removal
+Net 29,Aow Mao,wire,6,0.05,Mobile,High,5,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 30,Aow Mao,wire,5.9,0.0048,Mobile,High,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 31,Aow Mao,wire,5.4,0.005,Mobile,High,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 68,Grapeview,cloth,13.4,0.24,Mobile,High,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 72,Grapeview,wire,13.6,0.27,Mobile,High,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 85,Tao Tong South,rope,8.7,0.5625,Mobile,High,5,0,0,0,0,2,0,0,0,0,Prioritise removal
+Net 86,Tao Tong South,rope,8.6,0.36,Mobile,High,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 111,Hin Wong Bay,wire,6.3,0.105,Mobile,Severe,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 112,Hin Wong Bay,wire,6.4,0.06,Mobile,Severe,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 117,Hin Wong Bay,wire,8.3,0.012,Mobile,Severe,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 119,Hin Wong Bay,wire,6.5,0.03,Mobile,Severe,5,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 28,Aow Mao,wire,5.9,0.004,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 38,Lang Kai South,rope,11.6,0.138,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 42,South Nang Yuan,cloth,11.3,0.064,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 57,Buddha Rock North,wire,10.7,0.015,Mobile,Low,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 61,Laem Thiaen South,tire,11.1,0.25,Mobile,Moderate,4,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 77,North Sairee Wall,plastic,5.1,0.0224,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 78,North Sairee Wall,plastic,5.8,0.016,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 84,Tao Tong South,wire,8.7,0.2116,Mobile,Moderate,4,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 91,Tao Tong South,wire,9.3,0.0952,Mobile,Moderate,4,0,0,0,0,3,0,0,0,0,Prioritise removal
+Net 43,South Nang Yuan,wire,12.2,0.324,Mobile,Moderate,4,1,1,1,1,1,1,0,0,1,Prioritise removal
+Net 104,Sai Nuan North,wire,9.2,0.812,Mobile,Moderate,4,1,1,1,1,6,1,0,0,1,Prioritise removal
+Net 105,Sai Nuan North,wire,9.5,0.675,Mobile,Moderate,4,2,1,1,1,2,1,0,0,1,Prioritise removal
+Net 15,Chalok,plastic,8.6,0.2968,Mobile,Moderate,4,3,3,2,1,2,1,1,0,2,Prioritise removal
+Net 10,Southwest Pinnacle,rope,25.7,0.0682,Semi-stable,High,3,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 19,Chalok,rope,7.4,2e-4,Semi-stable,High,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 25,Aow Mao,rope,9.5,0.04,Semi-stable,Severe,3,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 27,Aow Mao,wire,6,0.015,Semi-stable,High,3,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 36,Lang Kai South,wire,10.3,0.075,Semi-stable,High,3,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 62,Laem Thiaen South,tire,10.4,0.25,Semi-stable,High,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 73,Grapeview,tire,10.1,0.115,Semi-stable,Severe,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 74,Grapeview,cloth,7.8,0.16,Semi-stable,Severe,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 92,Japanese Garden,rope,13.3,0.105,Semi-stable,High,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 108,Sai Nuan North,wire,7.6,0.051,Semi-stable,High,3,0,0,0,0,3,0,0,0,0,Prioritise removal
+Net 110,Hin Wong Bay,wire,9.6,0.18,Semi-stable,High,3,0,0,0,0,2,0,0,0,0,Prioritise removal
+Net 114,Hin Wong Bay,wire,7.1,0.0187,Semi-stable,High,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 116,Hin Wong Bay,wire,7.2,0.225,Semi-stable,High,3,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 3,Chalok,wire,11.6,1.105,Semi-stable,Severe,3,2,1,1,1,0,1,0,0,1,Prioritise removal
+Net 24,Aow Mao,wire,9.1,0.8,Semi-stable,High,3,3,0,2,1,1,0,1,0,1,Prioritise removal
+Net 33,Mango Bay,wire,6.5,0.0046,Semi-stable,High,3,1,1,1,1,3,1,0,0,1,Prioritise removal
+Net 47,South Nang Yuan,rope,9.2,1.47,Semi-stable,High,3,1,1,1,1,6,1,0,0,1,Prioritise removal
+Net 51,Aow Mao North,rope,10.1,0.95,Semi-stable,High,3,2,1,1,1,1,1,0,0,1,Prioritise removal
+Net 56,Buddha Rock North,rope,10.9,0.21,Semi-stable,High,3,2,1,1,1,1,1,0,0,1,Prioritise removal
+Net 71,Grapeview,wire,6.1,0.09,Semi-stable,Severe,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 81,North Sairee Wall,rope,12,0.14,Semi-stable,High,3,1,1,1,1,18,1,0,0,1,Prioritise removal
+Net 83,North Sairee Wall,wire,13.3,0.234,Semi-stable,High,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 88,Tao Tong South,wire,9.7,0.06,Semi-stable,High,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 107,Sai Nuan North,rope,6.8,0.6634,Semi-stable,High,3,1,1,1,1,2,1,0,0,1,Prioritise removal
+Net 113,Hin Wong Bay,wire,7,0.15,Semi-stable,High,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 118,Hin Wong Bay,wire,5.9,0.18,Semi-stable,Severe,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 120,Hin Wong Bay,rope,5.2,0.12,Semi-stable,Severe,3,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 13,Chalok,wire,8.7,1.2834,Semi-stable,High,3,2,2,2,1,12,1,1,0,2,Prioritise removal
+Net 17,Chalok,rope,9.1,1.2922,Semi-stable,High,3,3,3,2,1,3,1,1,0,2,Prioritise removal
+Net 32,Mango Bay,rope,9.4,0.15,Semi-stable,Moderate,2,0,0,0,0,1,0,0,0,0,Prioritise removal
+Net 41,South Nang Yuan,rope,10.3,0.187,Semi-stable,Moderate,2,1,0,1,1,1,0,0,0,0,Prioritise removal
+Net 58,Buddha Rock North,rope,10.6,0.12,Semi-stable,Moderate,2,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 79,North Sairee Wall,rope,4.2,0.64,Semi-stable,Moderate,2,1,0,1,1,1,0,0,0,0,Prioritise removal
+Net 99,Lighthouse,wire,13,0.636,Semi-stable,Moderate,2,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 101,Lighthouse,wire,7.1,0.0296,Semi-stable,Moderate,2,1,0,1,1,0,0,0,0,0,Prioritise removal
+Net 103,Lighthouse,rope,9.8,1.5158,Semi-stable,Moderate,2,1,0,1,1,0,0,0,0,0,Prioritise removal
+Net 109,Hin Wong Bay,wire,9.6,0.011,Semi-stable,Moderate,2,0,0,0,0,0,0,0,0,0,Prioritise removal
+Net 14,Chalok,rope,7.9,0.144,Semi-stable,Moderate,2,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 18,Chalok,wire,6.9,0.048,Semi-stable,Moderate,2,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 34,Mango Bay,wire,7.1,0.0032,Semi-stable,Moderate,2,2,1,1,1,0,1,0,0,1,Prioritise removal
+Net 35,Lang Kai South,wire,7.4,0.06,Semi-stable,Moderate,2,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 82,North Sairee Wall,rope,12.8,0.26,Semi-stable,Moderate,2,2,2,1,1,1,1,0,0,1,Prioritise removal
+Net 89,Tao Tong South,metal,10.4,2.625,Semi-stable,Moderate,2,1,1,1,1,6,1,0,0,1,Prioritise removal
+Net 97,Lighthouse,wire,14.2,2.604,Semi-stable,Moderate,2,5,0,1,2,0,0,0,1,1,Prioritise removal
+Net 102,Lighthouse,wire,10.7,1.092,Semi-stable,Moderate,2,1,1,1,1,0,1,0,0,1,Prioritise removal
+Net 106,Sai Nuan North,rope,10.1,1.02,Semi-stable,Moderate,2,2,1,2,1,19,1,1,0,2,Prioritise removal
+Net 45,South Nang Yuan,rope,10.6,0.9,Mobile,Moderate,4,5,5,5,3,1,1,2,1,4,Monitor
+Net 26,Aow Mao,rope,9.6,0.15,Semi-stable,Severe,3,4,2,2,2,2,1,1,1,3,Monitor
+Net 55,Buddha Rock North,wire,10.7,0.184,Semi-stable,High,3,3,3,2,2,4,1,1,1,3,Monitor
+Net 63,Tao Tong,rope,10.8,0.2938,Semi-stable,High,3,2,2,2,2,16,1,1,1,3,Monitor
+Net 66,Grapeview,wire,11.4,5.72,Semi-stable,High,3,2,1,2,2,3,1,1,1,3,Monitor
+Net 80,North Sairee Wall,tire,5.4,1.056,Semi-stable,High,3,3,1,2,2,0,1,1,1,3,Monitor
+Net 12,Chalok,rope,9.9,1.17,Semi-stable,High,3,6,5,3,2,17,1,2,1,4,Monitor
+Net 46,South Nang Yuan,wire,9.7,0.329,Semi-stable,High,3,5,4,3,3,1,1,2,1,4,Monitor
+Net 52,Aow Mao North,rope,11.7,1.2,Semi-stable,High,3,4,2,3,2,2,1,2,1,4,Monitor
+Net 60,Aow Leuk East,rope,8,0.465,Semi-stable,High,3,10,5,6,3,15,1,2,1,4,Monitor
+Net 67,Grapeview,rope,13,0.9072,Semi-stable,High,3,3,2,3,2,0,1,2,1,4,Monitor
+Net 70,Grapeview,rope,13.2,0.4655,Semi-stable,High,3,5,4,4,2,2,1,2,1,4,Monitor
+Net 75,Grapeview,rope,13.4,0.737,Semi-stable,High,3,6,4,6,3,2,1,2,1,4,Monitor
+Net 37,Lang Kai South,rope,10.9,2.1,Semi-stable,High,3,15,12,3,3,2,2,2,1,5,Monitor
+Net 54,Buddha Rock North,wire,10.8,0.27,Semi-stable,High,3,10,7,5,3,3,2,2,1,5,Monitor
+Net 87,Tao Tong South,rope,9.3,3.04,Semi-stable,High,3,8,6,4,3,1,2,2,1,5,Monitor
+Net 90,Tao Tong South,wire,9.4,2.656,Semi-stable,High,3,12,7,3,2,18,2,2,1,5,Monitor
+Net 64,Tao Tong,rope,10.9,1.45,Semi-stable,Moderate,2,4,3,2,2,5,1,1,1,3,Monitor
+Net 69,Grapeview,wire,13.3,3.54,Semi-stable,Moderate,2,2,2,2,2,2,1,1,1,3,Monitor
+Net 48,South Nang Yuan,wire,11.5,0.34,Semi-stable,Moderate,2,8,5,4,3,2,1,2,1,4,Monitor
+Net 49,South Nang Yuan,wire,11.9,0.36,Semi-stable,Moderate,2,5,4,3,2,4,1,2,1,4,Monitor
+Net 53,Aow Mao North,rope,14.9,0.3,Semi-stable,Moderate,2,3,2,3,2,1,1,2,1,4,Monitor
+Net 65,Tao Tong,tire,8.6,0.7936,Semi-stable,Moderate,2,6,2,4,2,1,1,2,1,4,Monitor
+Net 100,Lighthouse,rope,11.7,1.31976,Semi-stable,Moderate,2,13,12,13,3,0,2,2,1,5,Monitor
+Net 21,Chalok,rope,10.8,1.16,Semi-stable,High,3,23,18,6,4,11,2,2,2,6,Low removal priority
+Net 4,Chalok,wire,11.3,2.31,Semi-stable,Low,2,17,9,6,4,1,2,2,2,6,Low removal priority
+Net 9,White Rock,wire/plastic,6.5,2.31,Semi-stable,Moderate,2,10,8,4,4,7,2,2,2,6,Low removal priority
+Net 16,Chalok,wire,7.7,2.1879,Semi-stable,Moderate,2,42,9,4,4,4,2,2,2,6,Low removal priority
+Net 1,Chalok,wire,13.5,0.09,Stable,Moderate,1,3,2,2,2,0,1,1,1,3,Low removal priority
+Net 50,South Nang Yuan,rope,8.1,1.595,Stable,High,1,3,2,2,2,5,1,1,1,3,Low removal priority
+Net 2,Chalok,rope,13.6,0.91,Stable,Low,1,12,5,10,5,0,1,2,2,5,Low removal priority
+Net 11,Chalok,rope,9.8,1.1,Stable,High,1,24,13,7,3,9,2,2,1,5,Low removal priority
+Net 20,Chalok,wire,9.5,0.72,Stable,Moderate,1,29,20,5,3,3,2,2,1,5,Low removal priority
+Net 23,Shark Island,rope,13,0.063,Stable,High,1,12,7,5,3,37,2,2,1,5,Low removal priority
+Net 59,Buddha Rock North,metal,9.5,2.499,Stable,Moderate,1,19,15,7,3,27,2,2,1,5,Low removal priority

@@ -155,25 +155,18 @@ lmtest::coeftest(m3, vcov. = m3_vcov)
 lmtest::coefci(m3, vcov. = m3_vcov)
 
 # Expected ecological scores and robust 95% confidence intervals.
-risk_predictions <- tibble(risk_scale = 1:5)
+risk_predictions <- tibble(risk_scale = seq(1, 5, length.out = 100))
+
 risk_design <- model.matrix(~ risk_scale, data = risk_predictions)
 risk_link <- predict(m3, newdata = risk_predictions, type = "link")
 risk_se <- sqrt(diag(risk_design %*% m3_vcov %*% t(risk_design)))
 
 risk_predictions <- risk_predictions %>%
   mutate(
-    predicted = 7 * plogis(risk_link),
-    lower_CL = 7 * plogis(risk_link - qnorm(0.975) * risk_se),
-    upper_CL = 7 * plogis(risk_link + qnorm(0.975) * risk_se)
-  ) %>%
-  left_join(
-    framework %>%
-      group_by(risk_scale) %>%
-      summarise(n = n(), observed = mean(ecological_value), .groups = "drop"),
-    by = "risk_scale"
+    predicted = 6 * plogis(risk_link),
+    lower_CL = 6 * plogis(risk_link - qnorm(0.975) * risk_se),
+    upper_CL = 6 * plogis(risk_link + qnorm(0.975) * risk_se)
   )
-
-risk_predictions
 
 rm(risk_design, risk_link, risk_se)
 
@@ -231,10 +224,9 @@ m1b_restricted
 
 #### B. Stability bonus ####
 
-risk_ecology_no_bonus
-lmtest::coeftest(m3_no_bonus, vcov. = m3_no_bonus_vcov)
+risk_ecology_bonus
+lmtest::coeftest(m3_bonus, vcov. = m3_bonus_vcov)
 
-# Assess sensitivity of inference to within-site dependence.
 lmtest::coeftest(m3, vcov. = sandwich::vcovCL(
   m3, cluster = framework$site, type = "HC3"
 ))
@@ -256,8 +248,7 @@ framework %>%
     dfg_id, site, dfg_type, depth_m, surface_area_m2,
     stability, degradation, risk_scale, coral_abundance,
     coral_recruits, genus_richness, growth_form_richness,
-    fauna_abundance, score_recruits, score_genus, score_growth,
-    score_stability, ecological_value, action
+    fauna_abundance, score_recruits, score_genus, score_growth,ecological_value, action
   ) %>%
   arrange(action, desc(risk_scale), ecological_value) %>%
   write_csv(file.path(results_dir, "framework_gear.csv"))

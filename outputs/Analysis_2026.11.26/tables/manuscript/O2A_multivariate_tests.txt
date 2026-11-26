@@ -1,0 +1,100 @@
+Analysis of Deviance Table
+
+update(m2a, . ~ . - stability): cbind(coral_abundance, fauna_abundance) ~ degradation + cover_sediment + log_area
+m2a: cbind(coral_abundance, fauna_abundance) ~ stability + degradation + cover_sediment + log_area
+
+Multivariate test:
+                               Res.Df Df.diff   Dev Pr(>Dev)    
+update(m2a, . ~ . - stability)    100                           
+m2a                                98       2 50.63    0.001 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Univariate Tests:
+                               coral_abundance          fauna_abundance
+                                           Dev Pr(>Dev)             Dev
+update(m2a, . ~ . - stability)                                         
+m2a                                     31.021    0.001           19.61
+                                       
+                               Pr(>Dev)
+update(m2a, . ~ . - stability)         
+m2a                               0.002
+Arguments:
+ Test statistics calculated assuming uncorrelated response (for faster computation) 
+P-value calculated using 999 iterations via PIT-trap resampling.
+
+Analysis of Deviance Table
+
+update(m2a, . ~ . - degradation): cbind(coral_abundance, fauna_abundance) ~ stability + cover_sediment + log_area
+m2a: cbind(coral_abundance, fauna_abundance) ~ stability + degradation + cover_sediment + log_area
+
+Multivariate test:
+                                 Res.Df Df.diff   Dev Pr(>Dev)  
+update(m2a, . ~ . - degradation)    101                         
+m2a                                  98       3 19.27    0.013 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Univariate Tests:
+                                 coral_abundance          fauna_abundance
+                                             Dev Pr(>Dev)             Dev
+update(m2a, . ~ . - degradation)                                         
+m2a                                        2.748    0.517           16.52
+                                         
+                                 Pr(>Dev)
+update(m2a, . ~ . - degradation)         
+m2a                                 0.008
+Arguments:
+ Test statistics calculated assuming uncorrelated response (for faster computation) 
+P-value calculated using 999 iterations via PIT-trap resampling.
+
+Analysis of Deviance Table
+
+update(m2a, . ~ . - cover_sediment): cbind(coral_abundance, fauna_abundance) ~ stability + degradation + log_area
+m2a: cbind(coral_abundance, fauna_abundance) ~ stability + degradation + cover_sediment + log_area
+
+Multivariate test:
+                                    Res.Df Df.diff   Dev Pr(>Dev)  
+update(m2a, . ~ . - cover_sediment)     99                         
+m2a                                     98       1 6.133    0.069 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Univariate Tests:
+                                    coral_abundance         
+                                                Dev Pr(>Dev)
+update(m2a, . ~ . - cover_sediment)                         
+m2a                                           0.324    0.566
+                                    fauna_abundance         
+                                                Dev Pr(>Dev)
+update(m2a, . ~ . - cover_sediment)                         
+m2a                                           5.809    0.048
+Arguments:
+ Test statistics calculated assuming uncorrelated response (for faster computation) 
+P-value calculated using 999 iterations via PIT-trap resampling.
+
+Analysis of Deviance Table
+
+update(m2a, . ~ . - log_area): cbind(coral_abundance, fauna_abundance) ~ stability + degradation + cover_sediment
+m2a: cbind(coral_abundance, fauna_abundance) ~ stability + degradation + cover_sediment + log_area
+
+Multivariate test:
+                              Res.Df Df.diff   Dev Pr(>Dev)    
+update(m2a, . ~ . - log_area)     99                           
+m2a                               98       1 53.61    0.001 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Univariate Tests:
+                              coral_abundance          fauna_abundance
+                                          Dev Pr(>Dev)             Dev
+update(m2a, . ~ . - log_area)                                         
+m2a                                    40.689    0.001          12.919
+                                      
+                              Pr(>Dev)
+update(m2a, . ~ . - log_area)         
+m2a                              0.001
+Arguments:
+ Test statistics calculated assuming uncorrelated response (for faster computation) 
+P-value calculated using 999 iterations via PIT-trap resampling.
+

@@ -13,11 +13,13 @@ framework <- dfg %>%
                                coral_recruits >= 1 ~ 1L, TRUE ~ 0L),
     score_genus = case_when(genus_richness >= 3 ~ 2L,
                             genus_richness == 2 ~ 1L, TRUE ~ 0L),
-    score_growth = case_when(growth_form_richness >= 3 ~ 2L,
-                             growth_form_richness == 2 ~ 1L, TRUE ~ 0L),
+    score_growth = case_when(growth_form_richness >= 4 ~ 2L,
+                             growth_form_richness >= 2 ~ 1L, TRUE ~ 0L),
+    ecological_value = score_recruits + score_genus + score_growth,
+    
+    # Original stability bonus retained for sensitivity analysis only.
     score_stability = as.integer(risk_scale == 1),
-    ecological_value = score_recruits + score_genus + score_growth + score_stability,
-    ecological_no_bonus = ecological_value - score_stability
+    ecological_with_bonus = ecological_value + score_stability
   )
 
 stopifnot(
@@ -25,8 +27,8 @@ stopifnot(
   !anyDuplicated(framework$dfg_id),
   !anyNA(framework %>% select(coral_recruits, genus_richness, growth_form_richness)),
   all(framework$risk_scale %in% 1:5),
-  all(framework$ecological_value %in% 0:7),
-  all(framework$ecological_no_bonus %in% 0:6)
+  all(framework$ecological_value %in% 0:6),
+  all(framework$ecological_with_bonus %in% 0:7)
 )
 
 framework %>% count(risk_scale)
@@ -41,17 +43,17 @@ framework %>%
   )
 
 
-### 02. REMOVAL DECISION FRAMEWORK ####
+### 02. REMOVAL PRIORITISATION FRAMEWORK ####
 
-action_levels <- c("Remove", "Consider Removal", "Retain")
+action_levels <- c("Prioritise removal", "Monitor", "Low removal priority")
 
 classify_action <- function(risk, value) {
   factor(
     case_when(
-      risk == 1 ~ "Retain",
-      value <= 2 ~ "Remove",
-      risk %in% c(2, 3) & value >= 6 ~ "Retain",
-      TRUE ~ "Consider Removal"
+      risk == 1 ~ "Low removal priority",
+      value <= 2 ~ "Prioritise removal",
+      risk %in% c(2, 3) & value >= 6 ~ "Low removal priority",
+      TRUE ~ "Monitor"
     ),
     levels = action_levels
   )
@@ -60,17 +62,18 @@ classify_action <- function(risk, value) {
 framework <- framework %>%
   mutate(action = classify_action(risk_scale, ecological_value))
 
-decision_matrix <- expand_grid(risk_scale = 1:5, ecological_value = 0:7) %>%
+decision_matrix <- expand_grid(risk_scale = 1:5, ecological_value = 0:6) %>%
   mutate(action = classify_action(risk_scale, ecological_value)) %>%
   left_join(framework %>% count(risk_scale, ecological_value),
             by = c("risk_scale", "ecological_value")) %>%
   mutate(n = replace_na(n, 0L))
 
+# Removing the stability bonus must not alter management classifications.
 stopifnot(
   !anyNA(framework$action),
   sum(decision_matrix$n) == nrow(framework),
-  all(framework$action[framework$risk_scale == 1] == "Retain"),
-  !any(framework$action == "Retain" & framework$risk_scale >= 4)
+  all(framework$action ==
+        classify_action(framework$risk_scale, framework$ecological_with_bonus))
 )
 
 framework %>%
@@ -92,15 +95,12 @@ risk_ecology <- cor.test(
 
 risk_ecology
 
-# Fractional logistic regression accommodates bounded composite scores,
-# including exact zeros and ones, without assuming binomial trials.
-
+# Fractional logistic regression for the bounded ecological index.
 m3 <- glm(
-  I(ecological_value / 7) ~ risk_scale,
+  I(ecological_value / 6) ~ risk_scale,
   family = quasibinomial(link = "logit"), data = framework
 )
 
-# Robust covariance accounts for variance misspecification.
 m3_vcov <- sandwich::vcovHC(m3, type = "HC3")
 
 lmtest::coeftest(m3, vcov. = m3_vcov)
@@ -109,50 +109,45 @@ lmtest::coefci(m3, vcov. = m3_vcov)
 
 #### B. Stability bonus sensitivity ####
 
-# Remove the component directly derived from the risk score.
-# Rescale using the revised theoretical maximum of six.
-
-risk_ecology_no_bonus <- cor.test(
-  framework$risk_scale, framework$ecological_no_bonus,
+# Evaluate the influence of including stability directly in both indices.
+risk_ecology_bonus <- cor.test(
+  framework$risk_scale, framework$ecological_with_bonus,
   method = "spearman", exact = FALSE
 )
 
-risk_ecology_no_bonus
+risk_ecology_bonus
 
-m3_no_bonus <- glm(
-  I(ecological_no_bonus / 6) ~ risk_scale,
+m3_bonus <- glm(
+  I(ecological_with_bonus / 7) ~ risk_scale,
   family = quasibinomial(link = "logit"), data = framework
 )
 
-m3_no_bonus_vcov <- sandwich::vcovHC(m3_no_bonus, type = "HC3")
+m3_bonus_vcov <- sandwich::vcovHC(m3_bonus, type = "HC3")
 
-lmtest::coeftest(m3_no_bonus, vcov. = m3_no_bonus_vcov)
-lmtest::coefci(m3_no_bonus, vcov. = m3_no_bonus_vcov)
+lmtest::coeftest(m3_bonus, vcov. = m3_bonus_vcov)
+lmtest::coefci(m3_bonus, vcov. = m3_bonus_vcov)
 
 
 ### 04. MODEL ADEQUACY ####
 
-stopifnot(m3$converged, m3_no_bonus$converged)
-
-# Compare observed and fitted means across the ordinal risk gradient
-# to assess the assumed logit-linear relationship.
+stopifnot(m3$converged, m3_bonus$converged)
 
 framework %>%
   mutate(
-    fitted_value = fitted(m3) * 7,
-    fitted_no_bonus = fitted(m3_no_bonus) * 6
+    fitted_value = fitted(m3) * 6,
+    fitted_bonus = fitted(m3_bonus) * 7
   ) %>%
   group_by(risk_scale) %>%
   summarise(
     n = n(),
     observed = mean(ecological_value),
     predicted = mean(fitted_value),
-    observed_no_bonus = mean(ecological_no_bonus),
-    predicted_no_bonus = mean(fitted_no_bonus),
+    observed_bonus = mean(ecological_with_bonus),
+    predicted_bonus = mean(fitted_bonus),
     .groups = "drop"
   )
 
-# Assess sensitivity of regression inference to site-level clustering.
+# Assess sensitivity of inference to within-site dependence.
 lmtest::coeftest(m3, vcov. = sandwich::vcovCL(
   m3, cluster = framework$site, type = "HC3"
 ))
@@ -165,42 +160,13 @@ saveRDS(
     framework = framework,
     decision_matrix = decision_matrix,
     risk_ecology = risk_ecology,
-    risk_ecology_no_bonus = risk_ecology_no_bonus,
+    risk_ecology_bonus = risk_ecology_bonus,
     m3 = m3,
     m3_vcov = m3_vcov,
-    m3_no_bonus = m3_no_bonus,
-    m3_no_bonus_vcov = m3_no_bonus_vcov
+    m3_bonus = m3_bonus,
+    m3_bonus_vcov = m3_bonus_vcov
   ),
   file.path(fits_dir, "removal_framework.rds")
 )
 
-
-### FRAMEWORK CASE STUDIES ####
-
-framework %>%
-  select(
-    dfg_id, site, dfg_type, depth_m, surface_area_m2,
-    stability, degradation, risk_scale, ecological_value,
-    coral_abundance, coral_recruits, genus_richness,
-    growth_form_richness, fauna_abundance,
-    cover_hard_coral, cover_macroalgae, cover_sediment,
-    total_biotic_cover, action
-  ) %>%
-  arrange(action, desc(risk_scale), desc(ecological_value)) %>%
-  print(n = Inf, width = Inf)
-
-#### Illustrative management cases
-
-example_ids <- paste("Net", c(86, 13, 45, 90, 20, 21))
-
-framework %>%
-  filter(dfg_id %in% example_ids) %>%
-  select(
-    dfg_id, site, dfg_type, depth_m, surface_area_m2,
-    stability, degradation, risk_scale, ecological_value,
-    coral_abundance, coral_recruits, genus_richness,
-    growth_form_richness, fauna_abundance,
-    starts_with("cover_"), total_biotic_cover, action
-  ) %>%
-  arrange(action, desc(risk_scale)) %>%
-  print(n = Inf, width = Inf)
+beep()
